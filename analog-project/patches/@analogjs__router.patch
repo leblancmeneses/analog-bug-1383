@@ -1,0 +1,38 @@
+diff --git a/fesm2022/analogjs-router.mjs b/fesm2022/analogjs-router.mjs
+index 7f12d66c7e952330fdf1c17f9f46be5d1dcde687..f6a6bca3711fa95cb71991319f057476558b6a68 100644
+--- a/fesm2022/analogjs-router.mjs
++++ b/fesm2022/analogjs-router.mjs
+@@ -469,6 +469,7 @@ function requestContextInterceptor(req, next) {
+         global.$fetch &&
+         baseUrl &&
+         (req.url.startsWith('/') || req.url.startsWith(baseUrl))) {
++        console.log('during prerendering with Nitro', baseUrl, req.url);
+         const requestUrl = new URL(req.url, baseUrl);
+         const cacheKey = makeCacheKey(req, new URL(requestUrl).pathname);
+         const storeKey = makeStateKey(`analog_${cacheKey}`);
+@@ -504,13 +505,17 @@ function requestContextInterceptor(req, next) {
+     // on the client
+     if (!import.meta.env.SSR &&
+         (req.url.startsWith('/') || req.url.includes('/_analog/'))) {
++        console.log('on the client', baseUrl, req.url);
+         // /_analog/ requests are full URLs
+         const requestUrl = req.url.includes('/_analog/')
+             ? req.url
+             : `${window.location.origin}${req.url}`;
+         const cacheKey = makeCacheKey(req, new URL(requestUrl).pathname);
++        console.log('cacheKey', cacheKey);
+         const storeKey = makeStateKey(`analog_${cacheKey}`);
++        console.log('storeKey', storeKey);
+         const cacheRestoreResponse = transferState.get(storeKey, null);
++        console.log('cacheRestoreResponse', cacheRestoreResponse);
+         if (cacheRestoreResponse) {
+             transferState.remove(storeKey);
+             return of(new HttpResponse(cacheRestoreResponse));
+@@ -524,6 +529,7 @@ function requestContextInterceptor(req, next) {
+         const requestUrl = req.url.startsWith(baseUrl) && !req.url.startsWith('/')
+             ? req.url
+             : `${baseUrl}${req.url}`;
++        console.log('on the server', baseUrl, req.url, requestUrl);
+         return next(req.clone({
+             url: requestUrl,
+         }));

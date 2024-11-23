@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
 
+import { toSignal } from '@angular/core/rxjs-interop';
+import { injectLoad } from '@analogjs/router';
+import { load } from './index.server'; // not included in client build
+
 @Component({
   selector: 'app-home',
   standalone: true,
   template: `
-    <h2>Analog</h2>
+    <h2>Analog {{data().hello}}</h2>
 
     <h3>The fullstack meta-framework for Angular!</h3>
 
@@ -35,4 +39,6 @@ import { Component } from '@angular/core';
     }
   `,
 })
-export default class HomeComponent {}
+export default class HomeComponent {
+  data = toSignal(injectLoad<typeof load>(), { requireSync: true });
+}
